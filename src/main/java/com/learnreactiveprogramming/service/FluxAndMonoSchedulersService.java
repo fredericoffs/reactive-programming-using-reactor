@@ -8,11 +8,13 @@ import java.util.List;
 public class FluxAndMonoSchedulersService {
 
     public Flux<String> namesFlux() {
-        return Flux.fromIterable(List.of("alex", "ben", "chole"));
+        return Flux.fromIterable(List.of("alex", "ben", "chole"))
+                .log();
     }
 
     public Mono<String> nameMono() {
-        return Mono.just("Other name");
+        return Mono.just("Other name")
+                .log();
     }
 
     public static void main(String[] args) {
