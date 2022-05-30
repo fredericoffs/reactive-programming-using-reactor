@@ -8,7 +8,7 @@ import java.util.List;
 public class FluxAndMonoSchedulersService {
 
     public Flux<String> namesFlux() {
-        return Flux.fromIterable(List.of("alex", "ben", "chole"))
+        return Flux.fromIterable(List.of("alex", "ben", "chloe"))
                 .log();
     }
 
