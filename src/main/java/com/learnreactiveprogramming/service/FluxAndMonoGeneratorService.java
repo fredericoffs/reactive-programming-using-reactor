@@ -17,10 +17,18 @@ public class FluxAndMonoGeneratorService {
                 .log();
     }
 
-    public Flux<String> namesFlux_map(int stringLenght) {
+    public Mono<String> namesMono_map_filter(int stringLength) {
+        return Mono.just("alex")
+                .map(String::toUpperCase)
+                .filter(s-> s.length() > stringLength)
+                .map(s->s.length() +"-"+s)
+                .log();
+    }
+
+    public Flux<String> namesFlux_map(int stringLength) {
         return Flux.fromIterable(List.of("alex", "ben", "chloe"))
                 .map(String::toUpperCase)
-                .filter(s-> s.length() > stringLenght)
+                .filter(s-> s.length() > stringLength)
                 .map(s->s.length() +"-"+s)
                 .log();
     }

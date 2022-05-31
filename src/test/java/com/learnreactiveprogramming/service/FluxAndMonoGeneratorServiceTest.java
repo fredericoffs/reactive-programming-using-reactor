@@ -48,4 +48,13 @@ public class FluxAndMonoGeneratorServiceTest {
                 .expectNext("alex", "ben", "chloe")
                 .verifyComplete();
     }
+
+    @Test
+    void namesMono_map_filter() {
+        int stringLength = 3;
+        var nameMono= fluxAndMonoGeneratorService.namesMono_map_filter(stringLength);
+        StepVerifier.create(nameMono)
+                .expectNext("4-ALEX")
+                .verifyComplete();
+    }
 }
