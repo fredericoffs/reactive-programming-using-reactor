@@ -97,6 +97,52 @@ public class FluxAndMonoGeneratorService {
                 .log();
     }
 
+    public Flux<String> namesFlux_transform_defaultIfEmpty(int stringLength) {
+
+        Function<Flux<String>,Flux<String>> filterMap = name -> name                .map(String::toUpperCase)
+                .filter(s-> s.length() > stringLength);
+
+        return Flux.fromIterable(List.of("alex", "ben", "chloe"))
+                .transform(filterMap)
+                .flatMap(s->splitString(s))
+                .defaultIfEmpty("default")
+                .log();
+    }
+
+    public Mono<String> namesMono_map_filter_defaultIfEmpty(int stringLength) {
+        return Mono.just("alex")
+                .map(String::toUpperCase)
+                .filter(s-> s.length() > stringLength)
+                .map(s->s.length() +"-"+s)
+                .defaultIfEmpty("default")
+                .log();
+    }
+
+    public Mono<String> namesMono_map_filter_switchIfEmpty(int stringLength) {
+        var defaultSwitchIfEmpty = Mono.just("default");
+        return Mono.just("alex")
+                .map(String::toUpperCase)
+                .filter(s-> s.length() > stringLength)
+                .map(s->s.length() +"-"+s)
+                .switchIfEmpty(defaultSwitchIfEmpty)
+                .log();
+    }
+
+    public Flux<String> namesFlux_transform_switchIfEmpty(int stringLength) {
+
+        Function<Flux<String>,Flux<String>> filterMap = name -> name                .map(String::toUpperCase)
+                .filter(s-> s.length() > stringLength)
+                .flatMap(s->splitString(s));
+
+        var defaultSwitchIfEmpty = Flux.just("default")
+                .transform(filterMap);
+
+        return Flux.fromIterable(List.of("alex", "ben", "chloe"))
+                .transform(filterMap)
+                .switchIfEmpty(defaultSwitchIfEmpty)
+                .log();
+    }
+
     public Flux<String> splitString(String name){
         var charArray = name.split("");
         return Flux.fromArray(charArray);
@@ -114,6 +160,27 @@ public class FluxAndMonoGeneratorService {
         var namesFlux = Flux.fromIterable(List.of("alex", "ben", "chloe"));
         namesFlux.map(String::toUpperCase);
         return namesFlux;
+    }
+
+    public Flux<String> concat_example(){
+        var abcFlux = Flux.just("A","B","C");
+        var defFlux = Flux.just("D","E","F");
+
+        return Flux.concat(abcFlux,defFlux).log();
+    }
+
+    public Flux<String> concatWith_example(){
+        var abcFlux = Flux.just("A","B","C");
+        var defFlux = Flux.just("D","E","F");
+
+        return abcFlux.concatWith(defFlux).log();
+    }
+
+    public Flux<String> concatWith_mono_example(){
+        var aMono = Mono.just("A");
+        var bMono = Mono.just("D");
+
+        return aMono.concatWith(bMono).log();
     }
 
     public static void main(String[] args) {

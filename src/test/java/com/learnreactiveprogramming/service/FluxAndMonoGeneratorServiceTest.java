@@ -61,6 +61,24 @@ public class FluxAndMonoGeneratorServiceTest {
     }
 
     @Test
+    void namesMono_map_filter_defaultIfEmpty() {
+        int stringLength = 4;
+        var nameMono= fluxAndMonoGeneratorService.namesMono_map_filter_defaultIfEmpty(stringLength);
+        StepVerifier.create(nameMono)
+                .expectNext("default")
+                .verifyComplete();
+    }
+
+    @Test
+    void namesMono_map_filter_switchIfEmpty() {
+        int stringLength = 4;
+        var nameMono= fluxAndMonoGeneratorService.namesMono_map_filter_switchIfEmpty(stringLength);
+        StepVerifier.create(nameMono)
+                .expectNext("default")
+                .verifyComplete();
+    }
+
+    @Test
     void namesFlux_flatmap() {
         int stringLength = 3;
         var namesFlux = fluxAndMonoGeneratorService.namesFlux_flatmap(stringLength);
@@ -113,4 +131,47 @@ public class FluxAndMonoGeneratorServiceTest {
                 .expectNext("A","L","E","X")
                 .verifyComplete();
     }
+
+    @Test
+    void namesFlux_transform_defaultIfEmpty() {
+        int stringLength = 6;
+        var namesFlux = fluxAndMonoGeneratorService.namesFlux_transform_defaultIfEmpty(stringLength);
+        StepVerifier.create(namesFlux)
+                .expectNext("default")
+                .verifyComplete();
+    }
+
+    @Test
+    void namesFlux_transform_switchIfEmpty() {
+        int stringLength = 6;
+        var namesFlux = fluxAndMonoGeneratorService.namesFlux_transform_switchIfEmpty(stringLength);
+        StepVerifier.create(namesFlux)
+                .expectNext("D","E","F","A","U","L","T")
+                .verifyComplete();
+    }
+
+    @Test
+    void concat_example() {
+        var namesFlux = fluxAndMonoGeneratorService.concat_example();
+        StepVerifier.create(namesFlux)
+                .expectNext("A","B","C","D","E","F")
+                .verifyComplete();
+    }
+
+    @Test
+    void concatWith_example() {
+        var namesFlux = fluxAndMonoGeneratorService.concatWith_example();
+        StepVerifier.create(namesFlux)
+                .expectNext("A","B","C","D","E","F")
+                .verifyComplete();
+    }
+
+    @Test
+    void concatWith_mono_example() {
+        var namesFlux = fluxAndMonoGeneratorService.concatWith_mono_example();
+        StepVerifier.create(namesFlux)
+                .expectNext("A","D")
+                .verifyComplete();
+    }
+
 }
