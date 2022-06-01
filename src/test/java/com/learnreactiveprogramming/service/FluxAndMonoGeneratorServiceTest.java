@@ -152,26 +152,49 @@ public class FluxAndMonoGeneratorServiceTest {
 
     @Test
     void concat_example() {
-        var namesFlux = fluxAndMonoGeneratorService.concat_example();
-        StepVerifier.create(namesFlux)
+        var concatFlux = fluxAndMonoGeneratorService.concat_example();
+        StepVerifier.create(concatFlux)
                 .expectNext("A","B","C","D","E","F")
                 .verifyComplete();
     }
 
     @Test
     void concatWith_example() {
-        var namesFlux = fluxAndMonoGeneratorService.concatWith_example();
-        StepVerifier.create(namesFlux)
+        var concatWith = fluxAndMonoGeneratorService.concatWith_example();
+        StepVerifier.create(concatWith)
                 .expectNext("A","B","C","D","E","F")
                 .verifyComplete();
     }
 
     @Test
     void concatWith_mono_example() {
-        var namesFlux = fluxAndMonoGeneratorService.concatWith_mono_example();
-        StepVerifier.create(namesFlux)
+        var concatWithMono = fluxAndMonoGeneratorService.concatWith_mono_example();
+        StepVerifier.create(concatWithMono)
                 .expectNext("A","D")
                 .verifyComplete();
     }
 
+    @Test
+    void merge_example() {
+        var mergeFlux = fluxAndMonoGeneratorService.merge_example();
+        StepVerifier.create(mergeFlux)
+                .expectNext("A","D","B","E","C","F")
+                .verifyComplete();
+    }
+
+    @Test
+    void mergeWith_example() {
+        var mergeWith = fluxAndMonoGeneratorService.mergeWith_example();
+        StepVerifier.create(mergeWith)
+                .expectNext("A","D","B","E","C","F")
+                .verifyComplete();
+    }
+
+    @Test
+    void mergeWith_mono_example() {
+        var mergeWithMono = fluxAndMonoGeneratorService.mergeWith_mono_example();
+        StepVerifier.create(mergeWithMono)
+                .expectNext("A","D")
+                .verifyComplete();
+    }
 }

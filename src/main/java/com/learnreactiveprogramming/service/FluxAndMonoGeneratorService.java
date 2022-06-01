@@ -7,6 +7,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.function.Function;
 
+import static java.time.temporal.ChronoUnit.MILLIS;
+
 public class FluxAndMonoGeneratorService {
 
     public Flux<String> namesFlux() {
@@ -162,6 +164,7 @@ public class FluxAndMonoGeneratorService {
         return namesFlux;
     }
 
+    // .concat - static method in Flux
     public Flux<String> concat_example(){
         var abcFlux = Flux.just("A","B","C");
         var defFlux = Flux.just("D","E","F");
@@ -169,6 +172,7 @@ public class FluxAndMonoGeneratorService {
         return Flux.concat(abcFlux,defFlux).log();
     }
 
+    // .concatWith - instance method in Flux and Mono
     public Flux<String> concatWith_example(){
         var abcFlux = Flux.just("A","B","C");
         var defFlux = Flux.just("D","E","F");
@@ -181,6 +185,33 @@ public class FluxAndMonoGeneratorService {
         var bMono = Mono.just("D");
 
         return aMono.concatWith(bMono).log();
+    }
+
+    // .merge - static method in Flux
+    public Flux<String> merge_example(){
+        var abcFlux = Flux.just("A","B","C")
+                .delayElements(Duration.of(100,MILLIS));
+        var defFlux = Flux.just("D","E","F")
+                .delayElements(Duration.of(125,MILLIS));
+
+        return Flux.merge(abcFlux,defFlux).log();
+    }
+
+    // .mergeWith - instance method in Flux and Mono
+    public Flux<String> mergeWith_example(){
+        var abcFlux = Flux.just("A","B","C")
+                .delayElements(Duration.ofMillis(100));
+        var defFlux = Flux.just("D","E","F")
+                .delayElements(Duration.ofMillis(125));
+
+        return abcFlux.mergeWith(defFlux).log();
+    }
+
+    public Flux<String> mergeWith_mono_example(){
+        var aMono = Mono.just("A");
+        var bMono = Mono.just("D");
+
+        return aMono.mergeWith(bMono).log();
     }
 
     public static void main(String[] args) {
