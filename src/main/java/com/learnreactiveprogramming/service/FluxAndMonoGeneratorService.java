@@ -214,6 +214,16 @@ public class FluxAndMonoGeneratorService {
         return aMono.mergeWith(bMono).log();
     }
 
+    // .mergeSequential - static method in Flux
+    public Flux<String> mergeSequential_example(){
+        var abcFlux = Flux.just("A","B","C")
+                .delayElements(Duration.of(100,MILLIS));
+        var defFlux = Flux.just("D","E","F")
+                .delayElements(Duration.of(125,MILLIS));
+
+        return Flux.mergeSequential(abcFlux,defFlux).log();
+    }
+
     public static void main(String[] args) {
         FluxAndMonoGeneratorService fluxAndMonoGeneratorService = new FluxAndMonoGeneratorService();
         fluxAndMonoGeneratorService.namesFlux()
