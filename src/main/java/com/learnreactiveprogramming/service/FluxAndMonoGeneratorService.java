@@ -224,6 +224,41 @@ public class FluxAndMonoGeneratorService {
         return Flux.mergeSequential(abcFlux,defFlux).log();
     }
 
+    // .zip - Static method that’s part of the Flux
+    public Flux<String> zip_example() {
+        var abcFlux = Flux.just("A", "B", "C");
+        var defFlux = Flux.just("D", "E", "F");
+        return Flux.zip(abcFlux, defFlux, (first, second) ->first + second )
+                .log(); // AD, BE, CF
+    }
+
+    public Flux<String> zip_tuple4_example() {
+        var abcFlux = Flux.just("A", "B", "C");
+        var defFlux = Flux.just("D", "E", "F");
+        var flux3 = Flux.just("1", "2", "3");
+        var flux4 = Flux.just("4", "5", "6");
+        return Flux.zip(abcFlux, defFlux,flux3,flux4)
+                .map(t4 -> t4.getT1()+t4.getT2()+t4.getT3()+t4.getT4())
+                .log(); // AD14, BE25, CF36
+    }
+
+    // .zipWith - instance method that’s part of the Flux and Mono
+    public Flux<String> zipWith_example() {
+        var abcFlux = Flux.just("A", "B", "C");
+        var defFlux = Flux.just("D", "E", "F");
+        return abcFlux.zipWith(defFlux,(first, second) -> first + second)
+                .log(); // AD, BE, CF
+    }
+
+    public Mono<String> zipWith_mono_example(){
+        var aMono = Mono.just("A");
+        var bMono = Mono.just("D");
+
+        return aMono.zipWith(bMono)
+                .map(t2 -> t2.getT1()+t2.getT2())
+                .log();
+    }
+
     public static void main(String[] args) {
         FluxAndMonoGeneratorService fluxAndMonoGeneratorService = new FluxAndMonoGeneratorService();
         fluxAndMonoGeneratorService.namesFlux()

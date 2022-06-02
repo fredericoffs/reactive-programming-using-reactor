@@ -205,4 +205,36 @@ public class FluxAndMonoGeneratorServiceTest {
                 .expectNext("A","B","C","D","E","F")
                 .verifyComplete();
     }
+
+    @Test
+    void zip_example() {
+        var zipFlux = fluxAndMonoGeneratorService.zip_example();
+        StepVerifier.create(zipFlux)
+                .expectNext("AD","BE","CF")
+                .verifyComplete();
+    }
+
+    @Test
+    void zip_tuple4_example() {
+        var zipFlux = fluxAndMonoGeneratorService.zip_tuple4_example();
+        StepVerifier.create(zipFlux)
+                .expectNext("AD14","BE25","CF36")
+                .verifyComplete();
+    }
+
+    @Test
+    void zipWith_example() {
+        var zipWithFlux = fluxAndMonoGeneratorService.zipWith_example();
+        StepVerifier.create(zipWithFlux)
+                .expectNext("AD","BE","CF")
+                .verifyComplete();
+    }
+
+    @Test
+    void zipWith_mono_example() {
+        var zipWithMono = fluxAndMonoGeneratorService.zipWith_mono_example();
+        StepVerifier.create(zipWithMono)
+                .expectNext("AD")
+                .verifyComplete();
+    }
 }
