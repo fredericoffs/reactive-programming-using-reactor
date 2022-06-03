@@ -30,4 +30,22 @@ public class MovieReactiveService {
                             .map(reviewsList -> new Movie(movieInfo,reviewsList));
                 }).log();
     }
+
+    public Mono<Movie> getMovieById(long movieId){
+        var movieInfoMono = movieInfoService.retrieveMovieInfoMonoUsingId(movieId);
+        var reviewsList = reviewService.retrieveReviewsFlux(movieId)
+                .collectList();
+        return movieInfoMono.zipWith(reviewsList,(movieInfo, reviews) -> new Movie(movieInfo,reviews)).log();
+    }
+
+    public Mono<Movie> getMovieByIdMono (long movieId){
+        var movieInfoMono = movieInfoService.retrieveMovieInfoMonoUsingId(movieId);
+        return movieInfoMono
+                .flatMap(movieInfo -> {
+                    Mono<List<Review>> reviewsMono = reviewService.retrieveReviewsFlux(movieInfo.getMovieInfoId())
+                            .collectList();
+                    return reviewsMono
+                            .map(reviewsList -> new Movie(movieInfo,reviewsList));
+                }).log();
+    }
 }
