@@ -280,6 +280,13 @@ public class FluxAndMonoGeneratorService {
                 .log();
     }
 
+    public Flux<String> explore_onErrorReturn(){
+        return Flux.just("A","B","C")
+                .concatWith(Flux.error(new IllegalStateException("exception occurred")))
+                .onErrorReturn("D")
+                .log();
+    }
+
     public static void main(String[] args) {
         FluxAndMonoGeneratorService fluxAndMonoGeneratorService = new FluxAndMonoGeneratorService();
         fluxAndMonoGeneratorService.namesFlux()
