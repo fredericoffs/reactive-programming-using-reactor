@@ -1,5 +1,6 @@
 package com.learnreactiveprogramming.service;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -10,6 +11,7 @@ import java.util.function.Function;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
 
+@Slf4j
 public class FluxAndMonoGeneratorService {
 
     public Flux<String> namesFlux() {
@@ -284,6 +286,21 @@ public class FluxAndMonoGeneratorService {
         return Flux.just("A","B","C")
                 .concatWith(Flux.error(new IllegalStateException("exception occurred")))
                 .onErrorReturn("D")
+                .log();
+    }
+
+    public Flux<String> explore_onErrorResume(Exception e){
+
+        var recoveryFlux = Flux.just("D","E","F");
+        return Flux.just("A","B","C")
+                .concatWith(Flux.error(e))
+                .onErrorResume(ex -> {
+                    log.error("Exception is: ", ex);
+                    if (ex instanceof IllegalStateException)
+                        return recoveryFlux;
+                    else
+                        return Flux.error(ex);
+                })
                 .log();
     }
 
