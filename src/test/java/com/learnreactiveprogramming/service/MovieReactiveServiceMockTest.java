@@ -1,6 +1,8 @@
 package com.learnreactiveprogramming.service;
 
 import com.learnreactiveprogramming.exception.MovieException;
+import com.learnreactiveprogramming.exception.NetworkException;
+import com.learnreactiveprogramming.exception.ServiceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -78,7 +80,51 @@ class MovieReactiveServiceMockTest {
                 .expectErrorMessage(errorMessage)
                 .verify();
 
-        verify(reviewService,times(5))
+        verify(reviewService,times(4))
+                .retrieveReviewsFlux(isA(Long.class));
+    }
+
+    @Test
+    void getAllMovies_retryWhen() {
+
+        var errorMessage = "Exception occurred in ReviewService.";
+
+        Mockito.when(movieInfoService.movieInfoFlux())
+                .thenCallRealMethod();
+
+        Mockito.when(reviewService.retrieveReviewsFlux(anyLong()))
+                .thenThrow(new NetworkException(errorMessage));
+
+        var moviesFlux = reactiveMovieService.getAllMovies_retryWhen();
+
+        StepVerifier.create(moviesFlux)
+                //.expectError(MovieException.class)
+                .expectErrorMessage(errorMessage)
+                .verify();
+
+        verify(reviewService,times(4))
+                .retrieveReviewsFlux(isA(Long.class));
+    }
+
+    @Test
+    void getAllMovies_retryWhen_1() {
+
+        var errorMessage = "Exception occurred in ReviewService.";
+
+        Mockito.when(movieInfoService.movieInfoFlux())
+                .thenCallRealMethod();
+
+        Mockito.when(reviewService.retrieveReviewsFlux(anyLong()))
+                .thenThrow(new ServiceException(errorMessage));
+
+        var moviesFlux = reactiveMovieService.getAllMovies_retryWhen();
+
+        StepVerifier.create(moviesFlux)
+                //.expectError(MovieException.class)
+                .expectErrorMessage(errorMessage)
+                .verify();
+
+        verify(reviewService,times(1))
                 .retrieveReviewsFlux(isA(Long.class));
     }
 }
