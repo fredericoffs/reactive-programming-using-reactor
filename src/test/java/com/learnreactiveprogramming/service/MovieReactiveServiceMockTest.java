@@ -127,4 +127,49 @@ class MovieReactiveServiceMockTest {
         verify(reviewService,times(1))
                 .retrieveReviewsFlux(isA(Long.class));
     }
+
+    @Test
+    void getAllMovies_repeat() {
+
+        var errorMessage = "Exception occurred in ReviewService.";
+
+        Mockito.when(movieInfoService.movieInfoFlux())
+                .thenCallRealMethod();
+
+        Mockito.when(reviewService.retrieveReviewsFlux(anyLong()))
+                .thenCallRealMethod();
+
+        var moviesFlux = reactiveMovieService.getAllMovies_repeat();
+
+        StepVerifier.create(moviesFlux)
+                .expectNextCount(6)
+                .thenCancel()
+                .verify();
+
+        verify(reviewService,times(6))
+                .retrieveReviewsFlux(isA(Long.class));
+    }
+
+    @Test
+    void getAllMovies_repeat_n() {
+
+        var errorMessage = "Exception occurred in ReviewService.";
+
+        Mockito.when(movieInfoService.movieInfoFlux())
+                .thenCallRealMethod();
+
+        Mockito.when(reviewService.retrieveReviewsFlux(anyLong()))
+                .thenCallRealMethod();
+
+        var numberOfTimes = 2L;
+
+        var moviesFlux = reactiveMovieService.getAllMovies_repeat_n(numberOfTimes);
+
+        StepVerifier.create(moviesFlux)
+                .expectNextCount(9)
+                .verifyComplete();
+
+        verify(reviewService,times(9))
+                .retrieveReviewsFlux(isA(Long.class));
+    }
 }

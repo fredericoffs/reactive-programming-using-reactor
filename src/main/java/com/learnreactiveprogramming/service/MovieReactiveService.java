@@ -88,6 +88,54 @@ public class MovieReactiveService {
                 .log();
     }
 
+    public Flux<Movie> getAllMovies_repeat(){
+
+        var moviesInfoFlux = movieInfoService.movieInfoFlux();
+        return moviesInfoFlux
+                //reason for using flatmap is because the review service is again going to give you another reactive type.
+                // flatmap - any time in your transformation if you have a function that's returning another reactive type.
+                .flatMap(movieInfo -> {
+                    Mono<List<Review>> reviewsMono = reviewService.retrieveReviewsFlux(movieInfo.getMovieInfoId())
+                            .collectList();
+                    return reviewsMono
+                            .map(reviewsList -> new Movie(movieInfo,reviewsList));
+                })
+                .doOnError((ex)->{
+                    log.error("Exception is : ", ex);
+                    if(ex instanceof NetworkException)
+                        throw new MovieException(ex.getMessage());
+                    else
+                        throw new ServiceException(ex.getMessage());
+                })
+                .retryWhen(getRetryBackoffSpec())
+                .repeat()
+                .log();
+    }
+
+    public Flux<Movie> getAllMovies_repeat_n(long n){
+
+        var moviesInfoFlux = movieInfoService.movieInfoFlux();
+        return moviesInfoFlux
+                //reason for using flatmap is because the review service is again going to give you another reactive type.
+                // flatmap - any time in your transformation if you have a function that's returning another reactive type.
+                .flatMap(movieInfo -> {
+                    Mono<List<Review>> reviewsMono = reviewService.retrieveReviewsFlux(movieInfo.getMovieInfoId())
+                            .collectList();
+                    return reviewsMono
+                            .map(reviewsList -> new Movie(movieInfo,reviewsList));
+                })
+                .doOnError((ex)->{
+                    log.error("Exception is : ", ex);
+                    if(ex instanceof NetworkException)
+                        throw new MovieException(ex.getMessage());
+                    else
+                        throw new ServiceException(ex.getMessage());
+                })
+                .retryWhen(getRetryBackoffSpec())
+                .repeat(n)
+                .log();
+    }
+
     private RetryBackoffSpec getRetryBackoffSpec() {
         return Retry.fixedDelay(3, Duration.ofMillis(500))
                 .filter(ex -> ex instanceof MovieException)
