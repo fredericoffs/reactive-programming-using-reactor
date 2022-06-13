@@ -7,7 +7,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Function;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
@@ -343,6 +342,42 @@ public class FluxAndMonoGeneratorService {
                 .concatWith(Flux.error(new IllegalStateException("Exception occurred")))
                 .doOnError(ex -> {
                     log.error("Exception is: " + ex);
+                })
+                .log();
+    }
+
+    public Mono<Object> exploreMono_onErrorReturn(){
+        return Mono.just("A")
+                .map( value -> {
+                    throw new RuntimeException("Error Occurred.");
+                })
+                .onErrorReturn("abc")
+                .log();
+    }
+
+    public Mono<Object> exceptionMono_onErrorMap(Exception e){
+        return Mono.just("B")
+                .map(value -> {
+                        throw new RuntimeException("Exception occurred");
+                })
+                .onErrorMap((ex) -> {
+                    log.error("Exception is: ", ex);
+                    return new ReactorException(ex,ex.getMessage());
+                })
+                .log();
+    }
+
+    public Mono<String> exploreMono_onErrorContinue(String input){
+
+        return Mono.just(input)
+                .map(name -> {
+                    if(name.equals("abc"))
+                        throw new RuntimeException("Exception occurred");
+                    return name;
+                })
+                .onErrorContinue((ex,name) -> {
+                    log.error("Exception is: ", ex);
+                    log.info("Name is {}", name);
                 })
                 .log();
     }

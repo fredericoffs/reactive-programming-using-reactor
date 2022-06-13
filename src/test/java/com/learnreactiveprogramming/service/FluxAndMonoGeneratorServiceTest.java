@@ -320,4 +320,38 @@ public class FluxAndMonoGeneratorServiceTest {
                 .expectError(IllegalStateException.class)
                 .verify();
     }
+
+    @Test
+    void exploreMono_onErrorReturn() {
+        var value = fluxAndMonoGeneratorService.exploreMono_onErrorReturn();
+        StepVerifier.create(value)
+                .expectNext("abc")
+                .verifyComplete();
+    }
+
+    @Test
+    void explore_Mono_onErrorMap() {
+        var e = new RuntimeException("Not a valid state");
+        var value = fluxAndMonoGeneratorService.exceptionMono_onErrorMap(e);
+        StepVerifier.create(value)
+                .expectError(ReactorException.class)
+                .verify();
+    }
+
+    @Test
+    void exploreMono_onErrorContinue_abc() {
+        var input = "abc";
+        var value = fluxAndMonoGeneratorService.exploreMono_onErrorContinue(input);
+        StepVerifier.create(value)
+                .verifyComplete();
+    }
+
+    @Test
+    void exploreMono_onErrorContinue_reactor() {
+        var input = "reactor";
+        var value = fluxAndMonoGeneratorService.exploreMono_onErrorContinue(input);
+        StepVerifier.create(value)
+                .expectNext("reactor")
+                .verifyComplete();
+    }
 }
