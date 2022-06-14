@@ -20,10 +20,17 @@ public class MovieReactiveService {
 
     private MovieInfoService movieInfoService;
     private ReviewService reviewService;
+    private RevenueService revenueService;
 
     public MovieReactiveService(MovieInfoService movieInfoService, ReviewService reviewService) {
         this.movieInfoService = movieInfoService;
         this.reviewService = reviewService;
+    }
+
+    public MovieReactiveService(MovieInfoService movieInfoService, ReviewService reviewService, RevenueService revenueService) {
+        this.movieInfoService = movieInfoService;
+        this.reviewService = reviewService;
+        this.revenueService = revenueService;
     }
 
     public Flux<Movie> getAllMovies(){
@@ -148,6 +155,21 @@ public class MovieReactiveService {
         var reviewsList = reviewService.retrieveReviewsFlux(movieId)
                 .collectList();
         return movieInfoMono.zipWith(reviewsList,(movieInfo, reviews) -> new Movie(movieInfo,reviews)).log();
+    }
+
+    public Mono<Movie> getMovieById_withRevenue(long movieId){
+        var movieInfoMono = movieInfoService.retrieveMovieInfoMonoUsingId(movieId);
+        var reviewsList = reviewService.retrieveReviewsFlux(movieId)
+                .collectList();
+        var revenueMono = Mono.fromCallable(()->revenueService.getRevenue(movieId));
+
+        return movieInfoMono
+                .zipWith(reviewsList,(movieInfo, reviews) -> new Movie(movieInfo,reviews))
+                .zipWith(revenueMono,(movie,revenue)->{
+                    movie.setRevenue(revenue);
+                    return movie;
+                })
+                .log();
     }
 
     public Mono<Movie> getMovieByIdMono (long movieId){
