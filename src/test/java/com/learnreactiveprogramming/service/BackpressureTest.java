@@ -100,4 +100,57 @@ public class BackpressureTest {
 //                    log.info("Number is: {}",num);
 //                });
     }
+
+    @Test
+    void testBackPressure_drop() throws InterruptedException {
+        var numberRange = Flux.range(1,100).log();
+
+        CountDownLatch latch = new CountDownLatch(1);
+        numberRange
+                .onBackpressureDrop(item->{
+                    log.info("Dropped Items are: {}", item);
+                })
+                .subscribe(new BaseSubscriber<Integer>() {
+                    @Override
+                    protected void hookOnSubscribe(Subscription subscription) {
+                        //super.hookOnSubscribe(subscription);
+                        request(2);
+                    }
+
+                    @Override
+                    protected void hookOnNext(Integer value) {
+                        //super.hookOnNext(value);
+                        log.info("hookOnNext: {}",value);
+                        /*if(value%2==0 || value < 50){
+                            request(2);
+                        }else{
+                            cancel();
+                        }*/
+                        if(value==2){
+                            hookOnCancel();
+                        }
+                    }
+
+                    @Override
+                    protected void hookOnComplete() {
+                        //super.hookOnComplete();
+                    }
+
+                    @Override
+                    protected void hookOnError(Throwable throwable) {
+                        //super.hookOnError(throwable);
+                    }
+
+                    @Override
+                    protected void hookOnCancel() {
+                        //super.hookOnCancel();
+                        log.info("Inside OnCancel");
+                        latch.countDown();
+                    }
+                });
+        assertTrue(latch.await(5L, TimeUnit.SECONDS));
+//                .subscribe(num -> {
+//                    log.info("Number is: {}",num);
+//                });
+    }
 }
