@@ -153,4 +153,55 @@ public class BackpressureTest {
 //                    log.info("Number is: {}",num);
 //                });
     }
+
+    @Test
+    void testBackPressure_buffer() throws InterruptedException {
+        var numberRange = Flux.range(1,100).log();
+
+        CountDownLatch latch = new CountDownLatch(1);
+        numberRange
+                .onBackpressureBuffer(10,i->{
+                    log.info("Last buffer element is: {}", i);
+                })
+                .subscribe(new BaseSubscriber<Integer>() {
+                    @Override
+                    protected void hookOnSubscribe(Subscription subscription) {
+                        //super.hookOnSubscribe(subscription);
+                        request(1);
+                    }
+
+                    @Override
+                    protected void hookOnNext(Integer value) {
+                        //super.hookOnNext(value);
+                        log.info("hookOnNext: {}",value);
+
+                        if(value<50){
+                            request(1);
+                        }else{
+                            hookOnCancel();
+                        }
+                    }
+
+                    @Override
+                    protected void hookOnComplete() {
+                        //super.hookOnComplete();
+                    }
+
+                    @Override
+                    protected void hookOnError(Throwable throwable) {
+                        //super.hookOnError(throwable);
+                    }
+
+                    @Override
+                    protected void hookOnCancel() {
+                        //super.hookOnCancel();
+                        log.info("Inside OnCancel");
+                        latch.countDown();
+                    }
+                });
+        assertTrue(latch.await(5L, TimeUnit.SECONDS));
+//                .subscribe(num -> {
+//                    log.info("Number is: {}",num);
+//                });
+    }
 }
