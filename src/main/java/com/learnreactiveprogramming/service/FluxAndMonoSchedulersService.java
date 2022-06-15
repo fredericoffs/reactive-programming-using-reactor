@@ -2,6 +2,7 @@ package com.learnreactiveprogramming.service;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.ParallelFlux;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
@@ -49,6 +50,17 @@ public class FluxAndMonoSchedulersService {
                 .log();
 
         return namesFlux.mergeWith(namesFlux1);
+    }
+
+    public ParallelFlux<String> explore_parallel(){
+        var numbersOfCores = Runtime.getRuntime().availableProcessors();
+        log.info("Number of cores: {}",numbersOfCores);
+        return Flux.fromIterable(namesList)
+                //.publishOn(Schedulers.parallel())
+                .parallel()
+                .runOn(Schedulers.parallel())
+                .map(this::upperCase)
+                .log();
     }
 
     private Flux<String> flux1(List<String> namesList) {
