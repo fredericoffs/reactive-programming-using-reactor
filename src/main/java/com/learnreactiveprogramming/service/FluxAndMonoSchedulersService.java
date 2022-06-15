@@ -93,6 +93,14 @@ public class FluxAndMonoSchedulersService {
         return namesFlux.mergeWith(namesFlux1);
     }
 
+    public Flux<String> explore_parallel_usingFlatmapSequential(){
+        return Flux.fromIterable(namesList)
+                .flatMapSequential(name -> Mono.just(name)
+                        .map(this::upperCase)
+                        .subscribeOn(Schedulers.parallel()))
+                .log();
+    }
+
     private Flux<String> flux1(List<String> namesList) {
         return Flux.fromIterable(namesList)
                 .map(this::upperCase);
