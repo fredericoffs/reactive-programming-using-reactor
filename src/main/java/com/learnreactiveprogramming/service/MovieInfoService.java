@@ -26,7 +26,8 @@ public class MovieInfoService {
                 .get()
                 .uri("/v1/movie_infos")
                 .retrieve()
-                .bodyToFlux(MovieInfo.class);
+                .bodyToFlux(MovieInfo.class)
+                .log();
     }
 
     public  Flux<MovieInfo> movieInfoFlux(){
