@@ -27,4 +27,17 @@ class MovieReactiveServiceRestClientTest {
                 .expectNextCount(7)
                 .verifyComplete();
     }
+
+    @Test
+    void getMovieById_restClient(){
+        var movieId = 1L;
+        var moviesMono = movieReactiveService.getMovieById_restClient(movieId);
+
+        StepVerifier.create(moviesMono)
+                //.expectNextCount(1)
+                .assertNext( movieInfo ->
+                        assertEquals("Batman Begins", movieInfo.getMovie().getName())
+                )
+                .verifyComplete();
+    }
 }
