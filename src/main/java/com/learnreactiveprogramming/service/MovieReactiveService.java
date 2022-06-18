@@ -52,6 +52,25 @@ public class MovieReactiveService {
                 .log();
     }
 
+    public Flux<Movie> getAllMovies_RestClient(){
+
+        var moviesInfoFlux = movieInfoService.retrieveAllMovieInfo_RestClient();
+        return moviesInfoFlux
+                //reason for using flatmap is because the review service is again going to give you another reactive type.
+                // flatmap - any time in your transformation if you have a function that's returning another reactive type.
+                .flatMap(movieInfo -> {
+                    Mono<List<Review>> reviewsMono = reviewService.retrieveReviewsFlux_RestClient(movieInfo.getMovieInfoId())
+                            .collectList();
+                    return reviewsMono
+                            .map(reviewsList -> new Movie(movieInfo,reviewsList));
+                })
+                .doOnError((ex)->{
+                    log.error("Exception is : ", ex);
+                    throw new MovieException(ex.getMessage());
+                })
+                .log();
+    }
+
     public Flux<Movie> getAllMovies_retry(){
 
         var moviesInfoFlux = movieInfoService.movieInfoFlux();
