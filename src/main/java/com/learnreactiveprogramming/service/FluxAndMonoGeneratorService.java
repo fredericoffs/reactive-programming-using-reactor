@@ -469,4 +469,15 @@ public class FluxAndMonoGeneratorService {
                         sink.next(name.toUpperCase());
                 });
     }
+
+    public Flux<String> explore_Mono_onErrorMap_onOperatorDebug(Exception e){
+
+        return Flux.just("A")
+                .concatWith(Flux.error(e))
+                .onErrorMap((ex) -> {
+                    log.error("Exception is: ", ex);
+                    return new ReactorException(ex,ex.getMessage());
+                })
+                .log();
+    }
 }

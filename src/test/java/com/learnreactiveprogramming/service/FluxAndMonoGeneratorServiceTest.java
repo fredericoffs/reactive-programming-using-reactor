@@ -2,6 +2,7 @@ package com.learnreactiveprogramming.service;
 
 import com.learnreactiveprogramming.exception.ReactorException;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Hooks;
 import reactor.test.StepVerifier;
 import reactor.test.scheduler.VirtualTimeScheduler;
 
@@ -410,5 +411,16 @@ public class FluxAndMonoGeneratorServiceTest {
         StepVerifier.create(handle)
                 .expectNext("ALEX","CHLOE")
                 .verifyComplete();
+    }
+
+    @Test
+    void explore_Mono_onErrorMap_onOperatorDebug() {
+        Hooks.onOperatorDebug();
+        var e = new RuntimeException("Not a valid state");
+        var value = fluxAndMonoGeneratorService.explore_Mono_onErrorMap_onOperatorDebug(e);
+        StepVerifier.create(value)
+                .expectNext("A")
+                .expectError(ReactorException.class)
+                .verify();
     }
 }
