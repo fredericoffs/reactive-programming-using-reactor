@@ -393,4 +393,12 @@ public class FluxAndMonoGeneratorServiceTest {
                 .expectNext("alex")
                 .verifyComplete();
     }
+
+    @Test
+    void explore_handle() {
+        var handle= fluxAndMonoGeneratorService.explore_handle().log();
+        StepVerifier.create(handle)
+                .expectNext("ALEX","CHLOE")
+                .verifyComplete();
+    }
 }
