@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Hooks;
 import reactor.test.StepVerifier;
 import reactor.test.scheduler.VirtualTimeScheduler;
+import reactor.tools.agent.ReactorDebugAgent;
 
 import java.time.Duration;
 import java.util.List;
@@ -426,9 +427,21 @@ public class FluxAndMonoGeneratorServiceTest {
 
     @Test
     void explore_Mono_onErrorMap_checkpoint() {
-        
+
         var e = new RuntimeException("Not a valid state");
         var value = fluxAndMonoGeneratorService.explore_Mono_onErrorMap_checkpoint(e);
+        StepVerifier.create(value)
+                .expectNext("A")
+                .expectError(ReactorException.class)
+                .verify();
+    }
+
+    @Test
+    void explore_Mono_onErrorMap_ReactorAgentDebug() {
+        ReactorDebugAgent.init();
+        ReactorDebugAgent.processExistingClasses();
+        var e = new RuntimeException("Not a valid state");
+        var value = fluxAndMonoGeneratorService.explore_Mono_onErrorMap_ReactorAgentDebug(e);
         StepVerifier.create(value)
                 .expectNext("A")
                 .expectError(ReactorException.class)

@@ -492,4 +492,15 @@ public class FluxAndMonoGeneratorService {
                 })
                 .log();
     }
+
+    public Flux<String> explore_Mono_onErrorMap_ReactorAgentDebug(Exception e){
+
+        return Flux.just("A")
+                .concatWith(Flux.error(e))
+                .onErrorMap((ex) -> {
+                    log.error("Exception is: ", ex);
+                    return new ReactorException(ex,ex.getMessage());
+                })
+                .log();
+    }
 }
