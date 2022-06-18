@@ -444,4 +444,11 @@ public class FluxAndMonoGeneratorService {
         delay(1000);
         return List.of("alex", "ben", "chloe");
     }
+
+    public Mono<String> explore_create_mono(){
+
+        return Mono.create(sink->{
+            sink.success("alex");
+        });
+    }
 }
