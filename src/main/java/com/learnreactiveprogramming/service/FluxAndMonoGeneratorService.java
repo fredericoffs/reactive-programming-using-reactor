@@ -394,4 +394,18 @@ public class FluxAndMonoGeneratorService {
                     System.out.println("Mono name is: " + name);
                 });
     }
+
+    public Flux<Integer> explore_generate(){
+
+        return Flux.generate(
+                ()->1,(state,sink)->{
+                    sink.next(state*2);
+
+                    if(state==10){
+                        sink.complete();
+                    }
+                    return state+1;
+                }
+        );
+    }
 }
