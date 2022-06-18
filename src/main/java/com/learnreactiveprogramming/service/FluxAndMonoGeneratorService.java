@@ -452,6 +452,15 @@ public class FluxAndMonoGeneratorService {
         });
     }
 
+    public Mono<String> explore_create_mono1(){
+        return Mono.create(sink->{
+            CompletableFuture
+                    .supplyAsync( ()-> "alex")
+                    .thenAccept( name ->{ sink.success(name);})
+                    .thenRun(sink::success);
+        });
+    }
+
     public Flux<String> explore_handle(){
 
         return Flux.fromIterable(List.of("alex", "ben", "chloe"))
